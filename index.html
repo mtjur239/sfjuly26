@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>San Francisco Weekend — Michael &amp; Mom · July 10–13, 2026</title>
+<style>
+  :root{
+    --gg-red:#c0362c;
+    --gg-red-dark:#9c2a22;
+    --fog:#f5f3ee;
+    --ink:#26302e;
+    --ink-soft:#5b6663;
+    --bay:#2b6777;
+    --bay-light:#e3eef1;
+    --gold:#e0a94e;
+    --card:#ffffff;
+    --line:#e4e0d6;
+    --booked:#1d6b4f;
+    --booked-bg:#e2f2ea;
+    --suggested:#8a6d1f;
+    --suggested-bg:#f7efd8;
+    --radius:14px;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;background:var(--fog);color:var(--ink);line-height:1.55}
+
+  /* ---------- Hero ---------- */
+  header.hero{
+    background:linear-gradient(160deg,#1f3a43 0%,#2b6777 55%,#c0362c 140%);
+    color:#fff;padding:44px 20px 88px;text-align:center;position:relative;overflow:hidden;
+  }
+  header.hero::after{
+    content:"";position:absolute;left:0;right:0;bottom:-2px;height:56px;
+    background:var(--fog);clip-path:ellipse(75% 100% at 50% 100%);
+  }
+  .hero .kicker{letter-spacing:.28em;text-transform:uppercase;font-size:.75rem;opacity:.85}
+  .hero h1{font-size:clamp(1.7rem,4.5vw,2.6rem);font-weight:700;margin:.4rem 0 .3rem}
+  .hero p.sub{opacity:.9;max-width:560px;margin:0 auto;font-size:.98rem}
+  .hero .bridge{font-size:1.6rem;margin-bottom:.4rem}
+
+  main{max-width:880px;margin:-46px auto 0;padding:0 16px 70px;position:relative;z-index:2}
+
+  /* ---------- Quick facts ---------- */
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:26px}
+  .fact{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:0 2px 8px rgba(38,48,46,.06)}
+  .fact .label{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+  .fact .value{font-weight:700;font-size:.95rem;margin-top:2px}
+  .fact .meta{font-size:.8rem;color:var(--ink-soft)}
+
+  /* ---------- Tabs ---------- */
+  nav.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 14px;position:sticky;top:0;background:var(--fog);z-index:10}
+  nav.tabs button{
+    flex:1 0 auto;border:1px solid var(--line);background:var(--card);color:var(--ink);
+    border-radius:999px;padding:10px 18px;font-size:.9rem;font-weight:600;cursor:pointer;
+    transition:all .18s ease;white-space:nowrap;
+  }
+  nav.tabs button .d{display:block;font-size:.7rem;font-weight:500;color:var(--ink-soft)}
+  nav.tabs button.active{background:var(--gg-red);border-color:var(--gg-red);color:#fff}
+  nav.tabs button.active .d{color:#f7d9d5}
+
+  section.day{display:none;animation:fade .25s ease}
+  section.day.visible{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .day-head{margin:10px 0 18px}
+  .day-head h2{font-size:1.35rem}
+  .day-head p{color:var(--ink-soft);font-size:.95rem}
+
+  /* ---------- Timeline ---------- */
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--bay),var(--gg-red))}
+  .stop{position:relative;margin-bottom:16px}
+  .stop::before{
+    content:"";position:absolute;left:-24px;top:18px;width:12px;height:12px;border-radius:50%;
+    background:#fff;border:3px solid var(--bay);
+  }
+  .stop.booked::before{border-color:var(--booked);background:var(--booked-bg)}
+  .stop .card{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;box-shadow:0 2px 8px rgba(38,48,46,.05);cursor:pointer;
+  }
+  .stop .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .stop .time{font-weight:700;color:var(--bay);font-variant-numeric:tabular-nums;min-width:86px}
+  .stop.booked .time{color:var(--booked)}
+  .stop .title{font-weight:700}
+  .badge{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;border-radius:6px;padding:2px 8px;margin-left:auto}
+  .badge.b{background:var(--booked-bg);color:var(--booked)}
+  .badge.s{background:var(--suggested-bg);color:var(--suggested)}
+  .badge.t{background:var(--bay-light);color:var(--bay)}
+  .stop .desc{color:var(--ink-soft);font-size:.9rem;margin-top:4px}
+  .stop .details{display:none;margin-top:10px;border-top:1px dashed var(--line);padding-top:10px;font-size:.88rem}
+  .stop.open .details{display:block}
+  .details .row{display:flex;gap:8px;margin-bottom:4px}
+  .details .row .k{min-width:130px;color:var(--ink-soft);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;padding-top:2px}
+  .details .row .v{font-weight:500}
+  .conf{font-family:ui-monospace,Menlo,monospace;background:var(--bay-light);color:var(--bay);padding:1px 7px;border-radius:6px;font-size:.85rem}
+  .hint{font-size:.78rem;color:var(--ink-soft);margin-top:8px;font-style:italic}
+
+  .alert{
+    background:var(--suggested-bg);border:1px solid #e8d9a8;border-radius:var(--radius);
+    padding:12px 16px;font-size:.88rem;margin:0 0 18px;color:#6b5416;
+  }
+  .alert strong{color:#57430e}
+
+  /* ---------- Reservations & tips ---------- */
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .res-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:0 2px 8px rgba(38,48,46,.05)}
+  .res-card h3{font-size:1rem;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .res-card p{font-size:.87rem;color:var(--ink-soft);margin-bottom:3px}
+  .res-card p b{color:var(--ink)}
+  .tips{margin-top:10px}
+  .tips li{margin:0 0 8px 20px;font-size:.9rem}
+  h2.section{font-size:1.25rem;margin:34px 0 14px;display:flex;align-items:center;gap:10px}
+  h2.section::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  footer{text-align:center;color:var(--ink-soft);font-size:.8rem;padding:30px 16px 40px}
+
+  @media print{
+    nav.tabs{display:none}
+    section.day{display:block!important;page-break-after:always}
+    .stop .details{display:block}
+    header.hero{padding-bottom:40px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="bridge">🌉</div>
+  <div class="kicker">Juranek Family Weekend</div>
+  <h1>San Francisco &amp; Marin</h1>
+  <p class="sub">Michael &amp; Mom · Friday July 10 – Monday July 13, 2026 · Four Seasons Hotel San Francisco at Embarcadero</p>
+</header>
+
+<main>
+
+  <div class="facts">
+    <div class="fact">
+      <div class="label">Home Base</div>
+      <div class="value">Four Seasons Embarcadero</div>
+      <div class="meta">222 Sansome St · +1 415 276 9888</div>
+    </div>
+    <div class="fact">
+      <div class="label">Mom Arrives</div>
+      <div class="value">Fri 10 Jul · AA 2035</div>
+      <div class="meta">Miami → SFO · lands ≈8:56 PM</div>
+    </div>
+    <div class="fact">
+      <div class="label">Michael Arrives</div>
+      <div class="value">Sat 11 Jul · UA 870</div>
+      <div class="meta">Sydney → SFO · lands 6:50 AM</div>
+    </div>
+    <div class="fact">
+      <div class="label">Mom Departs</div>
+      <div class="value">Mon 13 Jul · AA 2565</div>
+      <div class="meta">SFO → Miami · departs ≈11:24 AM</div>
+    </div>
+  </div>
+
+  <nav class="tabs" id="tabs">
+    <button data-day="fri" class="active">Friday<span class="d">Jul 10 · Mom arrives</span></button>
+    <button data-day="sat">Saturday<span class="d">Jul 11 · City day</span></button>
+    <button data-day="sun">Sunday<span class="d">Jul 12 · Muir Woods &amp; Marin</span></button>
+    <button data-day="mon">Monday<span class="d">Jul 13 · Departure</span></button>
+    <button data-day="info">Info<span class="d">Bookings &amp; tips</span></button>
+  </nav>
+
+  <!-- ================= FRIDAY ================= -->
+  <section class="day visible" id="day-fri">
+    <div class="day-head">
+      <h2>Friday, July 10 — Mom's Arrival Night</h2>
+      <p>An easy landing night. Check in, get settled, rest up for a big Saturday.</p>
+    </div>
+    <div class="timeline">
+
+      <div class="stop booked">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">8:56 PM</span><span class="title">Mom lands at SFO — AA 2035 from Miami</span><span class="badge b">Flight</span></div>
+          <div class="desc">American Airlines 2035, Miami (MIA) → San Francisco (SFO), Terminal 1. Scheduled arrival ≈8:56 PM — check the AA app on the day for live status.</div>
+          <div class="details">
+            <div class="row"><span class="k">Flight</span><span class="v">AA 2035 · MIA → SFO</span></div>
+            <div class="row"><span class="k">Arrival</span><span class="v">SFO Terminal 1, ≈8:56 PM PDT (scheduled — verify on ticket)</span></div>
+            <div class="hint">Tap any card to expand or collapse details.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">9:30 PM</span><span class="title">Taxi or rideshare to the hotel</span><span class="badge t">Transport</span></div>
+          <div class="desc">~25–35 minutes from SFO to the Four Seasons Embarcadero at this hour.</div>
+          <div class="details">
+            <div class="row"><span class="k">Drop-off</span><span class="v">Four Seasons Hotel San Francisco at Embarcadero, 222 Sansome St</span></div>
+            <div class="row"><span class="k">Backup</span><span class="v">Hotel concierge can arrange a car: +1 415 276 9888</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop booked">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">10:00 PM</span><span class="title">Check in at Four Seasons Embarcadero</span><span class="badge b">Hotel</span></div>
+          <div class="desc">Settle in and get a good night's sleep — Michael lands at 6:50 AM and Saturday is a full day.</div>
+          <div class="details">
+            <div class="row"><span class="k">Address</span><span class="v">222 Sansome St, San Francisco, CA 94104</span></div>
+            <div class="row"><span class="k">Phone</span><span class="v">+1 415 276 9888</span></div>
+            <div class="row"><span class="k">Concierge</span><span class="v">concierge.embarcadero@fourseasons.com</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= SATURDAY ================= -->
+  <section class="day" id="day-sat">
+    <div class="day-head">
+      <h2>Saturday, July 11 — San Francisco Icons</h2>
+      <p>Alcatraz, Pier 39, Fort Point &amp; the Golden Gate Bridge — ending with a booked waterfront dinner at Waterbar at 5:30 PM.</p>
+    </div>
+
+    <div class="alert"><strong>Dinner is booked at Waterbar for 5:30 PM</strong> (15-minute grace period; $40/person no-show fee), so the afternoon wraps at the bridge by ~4:30 PM. Chinatown &amp; the cable car didn't fit — saved for a future trip.</div>
+
+    <div class="timeline">
+
+      <div class="stop booked">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">6:50 AM</span><span class="title">Michael lands at SFO — UA 870 from Sydney</span><span class="badge b">Flight</span></div>
+          <div class="desc">United 870 from Sydney arrives at the International Terminal at 6:50 AM.</div>
+          <div class="details">
+            <div class="row"><span class="k">Flight</span><span class="v">UA 870 · SYD → SFO · scheduled arrival 6:50 AM PDT</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop booked">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">6:50 AM</span><span class="title">Private SUV from SFO to the hotel</span><span class="badge b">Booked</span></div>
+          <div class="desc">Bali Limousine SUV meets Michael at the International Terminal and drives to the Four Seasons (~30–40 min).</div>
+          <div class="details">
+            <div class="row"><span class="k">Vendor</span><span class="v">Bali Limousine Inc. — International Terminal, SUV</span></div>
+            <div class="row"><span class="k">Confirmation</span><span class="v"><span class="conf">437775*3</span></span></div>
+            <div class="row"><span class="k">Cost</span><span class="v">$360.00 incl. tax &amp; gratuity</span></div>
+            <div class="row"><span class="k">Cancellation</span><span class="v">Refundable up to 3 hours before pick-up</span></div>
+            <div class="row"><span class="k">Contact on file</span><span class="v">+1 310 962 5482</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">7:45 AM</span><span class="title">Arrive at hotel — freshen up, meet Mom</span><span class="badge t">Hotel</span></div>
+          <div class="desc">Drop bags (room may not be ready this early — the bell desk will hold luggage).</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">8:15 AM</span><span class="title">Breakfast near the hotel</span><span class="badge s">Suggested</span></div>
+          <div class="desc">Quick breakfast in the Embarcadero / Ferry Building area, then a 20–25 minute walk (or short rideshare) along the waterfront to Pier 33.</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">9:30 AM</span><span class="title">Alcatraz Island — ferry &amp; audio tour</span><span class="badge s">Reserve tickets</span></div>
+          <div class="desc">Ferry from Pier 33. The award-winning cellhouse audio tour plus ferry takes about 3 hours all-in.</div>
+          <div class="details">
+            <div class="row"><span class="k">Departs</span><span class="v">Pier 33 Alcatraz Landing — arrive 30 min before sailing</span></div>
+            <div class="row"><span class="k">Note</span><span class="v">Book the earliest available tour on cityexperiences.com — sells out well in advance</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">12:45 PM</span><span class="title">Lunch — Fog Harbor Fish House, Pier 39</span><span class="badge s">Suggested</span></div>
+          <div class="desc">Waterfront views; known for clam chowder &amp; Dungeness crab. Backup: Boudin Bakery (10-min walk, chowder in a sourdough bowl).</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">1:45 PM</span><span class="title">Pier 39 &amp; Fisherman's Wharf</span><span class="badge s">Suggested</span></div>
+          <div class="desc">Sea lions, bay views, the Musical Stairs and mirror maze, then a stroll to Fisherman's Wharf with a stop inside Boudin Bakery.</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">2:45 PM</span><span class="title">Uber to Fort Point (≈15 min)</span><span class="badge t">Transport</span></div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">3:00 PM</span><span class="title">Fort Point National Historic Site</span><span class="badge s">Free entry</span></div>
+          <div class="desc">Stand directly beneath the Golden Gate Bridge. Take the spiral staircase to the rooftop — bring a jacket, it's windy.</div>
+          <div class="details">
+            <div class="row"><span class="k">Photo op</span><span class="v">3rd-floor window view + rooftop directly under the bridge</span></div>
+            <div class="row"><span class="k">Bonus</span><span class="v">Stairs near Fort Point → Battery East Trail → through the low-clearance tunnel → hidden picnic overlook with framed bridge views</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">4:00 PM</span><span class="title">Golden Gate Bridge — walk onto the span</span><span class="badge s">Suggested</span></div>
+          <div class="desc">From the Welcome Center, 20–30 minutes on the bridge is plenty. Then grab an Uber back across town (~30 min).</div>
+        </div>
+      </div>
+
+      <div class="stop booked">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">5:30 PM</span><span class="title">Dinner at Waterbar</span><span class="badge b">Booked</span></div>
+          <div class="desc">Table for 2 on the Embarcadero with Bay Bridge views. Seafood-forward menu.</div>
+          <div class="details">
+            <div class="row"><span class="k">Confirmation</span><span class="v"><span class="conf">2110614911</span> (OpenTable)</span></div>
+            <div class="row"><span class="k">Address</span><span class="v">399 The Embarcadero South, San Francisco · (415) 284-9922</span></div>
+            <div class="row"><span class="k">Grace period</span><span class="v">15 minutes — call if running late</span></div>
+            <div class="row"><span class="k">Cancellation</span><span class="v">Free until 24 h before; then $40/person no-show fee</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">7:15 PM</span><span class="title">Evening stroll on the Embarcadero</span><span class="badge s">Suggested</span></div>
+          <div class="desc">The Bay Bridge lights are beautiful after dark. It's an easy ~15-minute walk from Waterbar back to the hotel.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= SUNDAY ================= -->
+  <section class="day" id="day-sun">
+    <div class="day-head">
+      <h2>Sunday, July 12 — Muir Woods, Mt. Tam &amp; Marin</h2>
+      <p>Rental car day: redwoods, a ravine hike, iconic bridge overlooks and Sausalito — car back at the hotel by 7:00 PM.</p>
+    </div>
+
+    <div class="alert"><strong>Two timing anchors today:</strong> the Muir Woods parking window is <strong>9:00–9:30 AM</strong> (arrive within it — print the voucher, there's no cell service), and the Avis car is <strong>collected at the hotel at 7:00 PM</strong>, so dinner in Sausalito is early.</div>
+
+    <div class="timeline">
+
+      <div class="stop booked">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">7:00 AM</span><span class="title">Avis rental delivered to the hotel</span><span class="badge b">Booked</span></div>
+          <div class="desc">Mercedes-Benz C-Class (or similar), delivered to 222 Sansome St. Have Michael's licence and a credit card ready.</div>
+          <div class="details">
+            <div class="row"><span class="k">Reservation</span><span class="v"><span class="conf">19452074US5</span> (Avis First)</span></div>
+            <div class="row"><span class="k">Delivery</span><span class="v">Sun Jul 12, 7:00 AM · 222 Sansome St</span></div>
+            <div class="row"><span class="k">Collection</span><span class="v">Sun Jul 12, 7:00 PM · same address</span></div>
+            <div class="row"><span class="k">Cost</span><span class="v">≈$142.29 total (prepaid $152.18, ~$9.89 refund)</span></div>
+            <div class="row"><span class="k">Avis First line</span><span class="v">(1) 415-929-2555 · premium support 800-984-3912 (24 h)</span></div>
+            <div class="row"><span class="k">Note</span><span class="v">$300 credit-card hold; unpair your phone before returning the car</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">7:15 AM</span><span class="title">Quick breakfast at the hotel</span><span class="badge s">Suggested</span></div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">8:15 AM</span><span class="title">Drive to Muir Woods (~45 min)</span><span class="badge t">Transport</span></div>
+          <div class="desc">US-101 N across the Golden Gate Bridge, then Highway 1 / Muir Woods Rd. Download offline maps — no cell service at the park.</div>
+        </div>
+      </div>
+
+      <div class="stop booked">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">9:00 AM</span><span class="title">Muir Woods National Monument</span><span class="badge b">Booked</span></div>
+          <div class="desc">Walk beneath ancient coast redwoods on flat, shaded boardwalk paths. Roughly two hours does it justice.</div>
+          <div class="details">
+            <div class="row"><span class="k">Parking window</span><span class="v">9:00–9:30 AM (standard reservation — stay as long as you like)</span></div>
+            <div class="row"><span class="k">Barcode</span><span class="v"><span class="conf">051266473</span> — print or download before you go</span></div>
+            <div class="row"><span class="k">Includes</span><span class="v">1 parking spot ($10) + 2 adult entries ($15 × 2)</span></div>
+            <div class="row"><span class="k">Address</span><span class="v">1 Muir Woods Rd, Mill Valley, CA 94941</span></div>
+            <div class="row"><span class="k">Parking line</span><span class="v">1-800-410-2419 · GoMuirWoods.com</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">11:15 AM</span><span class="title">Mt. Tamalpais — Verna Dunshee Trail</span><span class="badge s">Suggested</span></div>
+          <div class="desc">Easy 0.8-mile loop at East Peak with 360° Bay Area views (~45 min). $10 parking — payable via the Yodel app (join "Friends of Mount Tam" Wi-Fi).</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">12:15 PM</span><span class="title">Steep Ravine / Dipsea Trail from Pantoll</span><span class="badge s">Suggested</span></div>
+          <div class="desc">The fairy-tale hike: redwoods, creek, wooden bridges and the famous 10-ft ladder beside a waterfall (~1.5 mi each way, moderate).</div>
+          <div class="details">
+            <div class="row"><span class="k">Easier option</span><span class="v">Hike downhill only to Stinson Beach, ride the Marin Transit shuttle back up to the car at Pantoll</span></div>
+            <div class="row"><span class="k">Wear</span><span class="v">Grippy shoes — damp and slippery in the ravine; bring water and a light jacket</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">2:00 PM</span><span class="title">Lunch — The Pelican Inn, Muir Beach</span><span class="badge s">Suggested</span></div>
+          <div class="desc">Cozy English pub 5 minutes off Highway 1 — fish &amp; chips, shepherd's pie, garden patio. (415) 383-6000. Alternatives: Parkside Café at Stinson Beach or Hook Fish Co. for a faster stop.</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">3:15 PM</span><span class="title">Battery Spencer — the postcard view</span><span class="badge s">Don't skip</span></div>
+          <div class="desc">The iconic high viewpoint over the Golden Gate Bridge, skyline and Alcatraz. Easy — 15–20 minutes.</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">3:45 PM</span><span class="title">Point Bonita Lighthouse (if open)</span><span class="badge s">Check hours</span></div>
+          <div class="desc">Cliff walk, hand-carved tunnel and suspension bridge to the lighthouse (~45–60 min). The tunnel only opens limited hours — verify before driving out. If closed, swap in Black Sands Beach (20–30 min).</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">4:45 PM</span><span class="title">Sausalito — waterfront stroll</span><span class="badge s">Suggested</span></div>
+          <div class="desc">Wander the harbourfront with views back across the bay to the city. Optional quick stop at Cavallo Point on the way in.</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">5:30 PM</span><span class="title">Early dinner — Barrel House Tavern</span><span class="badge s">Reserve</span></div>
+          <div class="desc">Waterfront patio, cioppino and cocktails at sunset. Kept early so the car makes its 7:00 PM collection — aim to be on the road by 6:20.</div>
+          <div class="details">
+            <div class="row"><span class="k">Tip</span><span class="v">Fill the gas tank in Marin before crossing the bridge — cheaper and easier than downtown SF</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop booked">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">6:20 PM</span><span class="title">Drive back to the hotel — car collected 7:00 PM</span><span class="badge b">Deadline</span></div>
+          <div class="desc">US-101 S over the Golden Gate Bridge, ~25–35 min on a Sunday evening. Avis collects the car at 222 Sansome St at 7:00 PM. Unpair phones and clear personal items.</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">7:15 PM</span><span class="title">Evening at leisure</span><span class="badge s">Suggested</span></div>
+          <div class="desc">One last stroll along the Embarcadero to see the Bay Bridge lights, or a nightcap at the hotel.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= MONDAY ================= -->
+  <section class="day" id="day-mon">
+    <div class="day-head">
+      <h2>Monday, July 13 — Mom Heads Home</h2>
+      <p>A relaxed morning, then off to SFO for the late-morning flight to Miami.</p>
+    </div>
+    <div class="timeline">
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">7:30 AM</span><span class="title">Breakfast together</span><span class="badge s">Suggested</span></div>
+          <div class="desc">One last breakfast at the hotel or the Ferry Building before packing up.</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">8:45 AM</span><span class="title">Rideshare to SFO (~30 min)</span><span class="badge t">Transport</span></div>
+          <div class="desc">Leaving by 8:45 gets Mom to the terminal ~2 hours before departure. Weekday morning traffic can add time — the concierge can pre-book a car.</div>
+        </div>
+      </div>
+
+      <div class="stop booked">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">11:24 AM</span><span class="title">Mom departs — AA 2565 to Miami</span><span class="badge b">Flight</span></div>
+          <div class="desc">American Airlines 2565, SFO Terminal 1 → Miami. Scheduled departure ≈11:24 AM — confirm exact time on the ticket / AA app.</div>
+          <div class="details">
+            <div class="row"><span class="k">Flight</span><span class="v">AA 2565 · SFO → MIA</span></div>
+            <div class="row"><span class="k">Departure</span><span class="v">SFO Terminal 1, ≈11:24 AM PDT (scheduled — verify on ticket)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="card" onclick="toggle(this)">
+          <div class="top"><span class="time">After</span><span class="title">Michael — work week begins</span><span class="badge t">Note</span></div>
+          <div class="desc">Michael continues his stay in San Francisco for work.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= INFO ================= -->
+  <section class="day" id="day-info">
+    <div class="day-head">
+      <h2>Bookings at a Glance</h2>
+      <p>Every confirmation in one place. Tap a day tab for the full timeline.</p>
+    </div>
+
+    <div class="grid2">
+      <div class="res-card">
+        <h3>🏨 Four Seasons Embarcadero</h3>
+        <p><b>222 Sansome St, San Francisco, CA 94104</b></p>
+        <p>Fri 10 Jul → Mon 13 Jul</p>
+        <p>Phone: +1 415 276 9888</p>
+        <p>Concierge: concierge.embarcadero@fourseasons.com</p>
+      </div>
+      <div class="res-card">
+        <h3>✈️ Flights</h3>
+        <p><b>Mom in:</b> AA 2035 · MIA → SFO · Fri 10 Jul, lands ≈8:56 PM</p>
+        <p><b>Michael in:</b> UA 870 · SYD → SFO · Sat 11 Jul, lands 6:50 AM</p>
+        <p><b>Mom out:</b> AA 2565 · SFO → MIA · Mon 13 Jul, departs ≈11:24 AM</p>
+        <p><i>AA times are current published schedules — verify against tickets.</i></p>
+      </div>
+      <div class="res-card">
+        <h3>🚙 Airport SUV — Sat 6:50 AM</h3>
+        <p><b>Bali Limousine Inc.</b> · SFO International Terminal → hotel</p>
+        <p>Confirmation: <span class="conf">437775*3</span></p>
+        <p>$360.00 incl. tax &amp; gratuity · refundable to 3 h before pickup</p>
+      </div>
+      <div class="res-card">
+        <h3>🍽️ Waterbar — Sat 5:30 PM</h3>
+        <p><b>399 The Embarcadero South</b> · (415) 284-9922</p>
+        <p>Table for 2 · Confirmation: <span class="conf">2110614911</span></p>
+        <p>15-min grace period · $40/person no-show inside 24 h</p>
+      </div>
+      <div class="res-card">
+        <h3>🚗 Avis Rental — Sun 7 AM–7 PM</h3>
+        <p><b>Benz C-Class or similar</b> · delivered &amp; collected at the hotel</p>
+        <p>Reservation: <span class="conf">19452074US5</span></p>
+        <p>≈$142.29 total · Avis First: (1) 415-929-2555 / 800-984-3912</p>
+      </div>
+      <div class="res-card">
+        <h3>🌲 Muir Woods — Sun 9:00–9:30 AM</h3>
+        <p><b>1 Muir Woods Rd, Mill Valley</b></p>
+        <p>Barcode: <span class="conf">051266473</span> · 1 parking + 2 adult entries</p>
+        <p><b>Print the voucher</b> — no cell service or Wi-Fi at the park</p>
+      </div>
+    </div>
+
+    <h2 class="section">Still To Book</h2>
+    <div class="grid2">
+      <div class="res-card">
+        <h3>⛴️ Alcatraz — Sat morning</h3>
+        <p>Book the earliest tour at <b>cityexperiences.com</b> — often sells out weeks ahead. Ferry from Pier 33.</p>
+      </div>
+      <div class="res-card">
+        <h3>🍷 Barrel House Tavern — Sun ~5:30 PM</h3>
+        <p>Reserve an early table (patio if possible) so the rental car makes its 7:00 PM collection.</p>
+      </div>
+    </div>
+
+    <h2 class="section">Trip Tips</h2>
+    <ul class="tips">
+      <li><b>Dress in layers.</b> Mornings 55–60°F, afternoons 60–70°F, windier and cooler at the coast and on the bridge. Fleece + windbreaker + comfortable shoes.</li>
+      <li><b>Download offline maps</b> for San Francisco and Marin — service is spotty at Muir Woods, Mt. Tam and the Headlands.</li>
+      <li><b>Print the Muir Woods voucher</b> before Sunday. It must be shown on arrival and there's no connectivity at the park.</li>
+      <li><b>Fill the gas tank in Marin</b> before driving back Sunday — easier and cheaper than downtown.</li>
+      <li><b>Pack a daypack Sunday:</b> water, snacks, sunscreen, portable charger, camera.</li>
+      <li><b>Let yourselves linger.</b> The plan has slack — an extra 20–30 minutes under the redwoods or at Battery Spencer is what you'll remember.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  San Francisco Weekend · Michael &amp; Mom · July 10–13, 2026<br>
+  Times marked ≈ are published schedules — always check live flight status on travel days.
+</footer>
+
+<script>
+  const tabs = document.querySelectorAll('#tabs button');
+  const days = document.querySelectorAll('section.day');
+  tabs.forEach(btn => btn.addEventListener('click', () => {
+    tabs.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    days.forEach(d => d.classList.remove('visible'));
+    document.getElementById('day-' + btn.dataset.day).classList.add('visible');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }));
+  function toggle(card){ card.parentElement.classList.toggle('open'); }
+</script>
+
+</body>
+</html>
